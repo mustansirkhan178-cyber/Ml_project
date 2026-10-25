@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ML App</title>
+</head>
+<body>
+  <h1>Machine Learning App</h1>
+  <h2>House Price Prediction</h2>
+  <form id="house-form">
+    <input type="number" id="area" placeholder="Area (sq ft)" step="any" required>
+    <input type="number" id="bedrooms" placeholder="Bedrooms" required>
+    <input type="number" id="bathrooms" placeholder="Bathrooms" required>
+    <button type="submit">Predict Price</button>
+  </form>
+  <p id="house-result"></p>
+  <h2>Iris Species Prediction</h2>
+  <form id="iris-form">
+    <input type="number" id="sepal_length" placeholder="Sepal Length (cm)" step="any" required>
+    <input type="number" id="sepal_width" placeholder="Sepal Width (cm)" step="any" required>
+    <input type="number" id="petal_length" placeholder="Petal Length (cm)" step="any" required>
+    <input type="number" id="petal_width" placeholder="Petal Width (cm)" step="any" required>
+    <button type="submit">Predict Species</button>
+  </form>
+  <p id="iris-result"></p>
+  <script>
+    document.getElementById("house-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const data = {
+        area: parseFloat(document.getElementById("area").value),
+        bedrooms: parseInt(document.getElementById("bedrooms").value),
+        bathrooms: parseInt(document.getElementById("bathrooms").value)
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/predict/regression", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      const price = Math.round(result.predicted_price).toLocaleString("en-US");
+document.getElementById("house-result").innerText = "Predicted price: $" + price;
+    });
+
+    document.getElementById("iris-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const data = {
+        sepal_length: parseFloat(document.getElementById("sepal_length").value),
+        sepal_width: parseFloat(document.getElementById("sepal_width").value),
+        petal_length: parseFloat(document.getElementById("petal_length").value),
+        petal_width: parseFloat(document.getElementById("petal_width").value)
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/predict/classification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      document.getElementById("iris-result").innerText = "Predicted species: " + result.predicted_species;
+    });
+  </script>
+</body>
+</html>
